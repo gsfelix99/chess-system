@@ -4,18 +4,18 @@ import Chess.pieces.King;
 import Chess.pieces.Rook;
 import boardgame.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChessMatch {
+
     private int turn;
     private Color currentPlayer;
     private Board board;
 
-    public int getTurn() {
-        return turn;
-    }
+    private List<Piece> piecesOnTheBoard = new ArrayList<>();
+    private List<Piece> capturedPieces = new ArrayList<>();
 
-    public Color getCurrentPlayer() {
-        return currentPlayer;
-    }
 
 //    public void setTurn(int turn) {
 //        this.turn = turn;
@@ -29,6 +29,14 @@ public class ChessMatch {
         turn = 1;
         currentPlayer = Color.WHITE;
         initialSetup();
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public Color getCurrentPlayer() {
+        return currentPlayer;
     }
 
     public ChessPiece[][] getPices() {
@@ -55,9 +63,8 @@ public class ChessMatch {
         Position source = sourcePosition.toPosition();
         Position target = targetPosition.toPosition();
 
-        validateTargetPosition(source, target);
-
         validateSourcePosition(source);
+        validateTargetPosition(source, target);
         Piece capturedPice = makeMove(source, target);
 
         nextTurn();
@@ -70,6 +77,10 @@ public class ChessMatch {
         Piece capturedPice = board.piece(target);
         board.placePiece(p, target);
 
+        if (capturedPice != null) {
+            piecesOnTheBoard.remove(capturedPice);
+            capturedPieces.add(capturedPice);
+        }
         return  capturedPice;
     }
 
@@ -98,6 +109,7 @@ public class ChessMatch {
 
     protected void placeNewPiece(char column, int row, ChessPiece piece) {
         board.placePiece(piece, new ChessPosition(column, row).toPosition());
+        piecesOnTheBoard.add(piece);
     }
 
     private void initialSetup() {
